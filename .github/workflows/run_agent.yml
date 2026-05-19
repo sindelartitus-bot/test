@@ -1,0 +1,55 @@
+name: Semiconductor AI Agent
+
+on:
+  schedule:
+    # GitHub 服务器使用国际标准时间(UTC)，北京时间要减去 8 小时。且只在周一到周五运行。
+    # 北京时间 08:45 = UTC 00:45
+    - cron: '45 0 * * 1-5'
+    # 北京时间 16:00 = UTC 08:00
+    - cron: '0 8 * * 1-5'
+  workflow_dispatch: # 允许你手动点击按钮随时运行测试
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+
+    - name: 设置 Python 环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 安装依赖包
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: 运行早盘分析 (北京时间 08:45)
+      if: github.event.schedule == '45 0 * * 1-5'
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        SENDER_AUTH_CODE: ${{ secrets.SENDER_AUTH_CODE }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: python gemini_agent.py morning
+
+    - name: 运行盘后分析 (北京时间 16:00)
+      if: github.event.schedule == '0 8 * * 1-5'
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        SENDER_AUTH_CODE: ${{ secrets.SENDER_AUTH_CODE }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: python gemini_agent.py evening
+
+    - name: 手动测试运行 (默认调用早盘逻辑)
+      if: github.event_name == 'workflow_dispatch'
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        SENDER_AUTH_CODE: ${{ secrets.SENDER_AUTH_CODE }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: python gemini_agent.py morning

@@ -2,17 +2,14 @@ name: Semiconductor AI Agent
 
 on:
   schedule:
-    # GitHub 服务器使用国际标准时间(UTC)，北京时间要减去 8 小时。且只在周一到周五运行。
-    # 北京时间 08:45 = UTC 00:45
     - cron: '45 0 * * 1-5'
-    # 北京时间 16:00 = UTC 08:00
     - cron: '0 8 * * 1-5'
-  workflow_dispatch: # 允许你手动点击按钮随时运行测试
+  workflow_dispatch: 
 
 jobs:
   run-agent:
     runs-on: ubuntu-latest
-env:
+    env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -47,7 +44,7 @@ env:
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
       run: python gemini_agent.py evening
 
-    - name: 手动测试运行 (默认调用早盘逻辑)
+    - name: 手动测试运行 (默认早盘逻辑)
       if: github.event_name == 'workflow_dispatch'
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

@@ -70,6 +70,10 @@ def generate_ai_report(market_context, time_period):
     prompt = f"""
     你是一位资深的电子半导体产业研究员。请根据以下我为你抓取的最新国内外半导体市场高频数据，撰写一份结构严谨、无废话的【{time_period}】简报。
 
+    【我的个人持仓数据】（核心机密，请重点评估）
+    - 当前持股数量：4100股
+    - 个人持仓成本：2.024
+
     【采集到的市场数据】
     {market_context}
 
@@ -77,10 +81,12 @@ def generate_ai_report(market_context, time_period):
     1. 如果是【早盘分析】：分析隔夜美股对今天A股芯片ETF的开盘情绪传导。
     2. 如果是【盘后总结】：结合海外数据判断当前产业周期，给出一句话风险告诫。
     3. 核心个股异动分析：指出当天的领涨龙头和领跌拖累项，并简述它们代表的细分赛道（如算力、设备、存储、封测）。
-    4. 风格要求：专业、客观、严厉，多用专业术语，严禁废话。
+    4. ★ 专属持仓操作建议 ★（最重要）：请结合当前最新行情和我【2.024】的成本，必须给我一个极其明确的决策！在【抛出】、【再购入（补仓）】或【继续观望】中三选一，并给出极其冷酷、客观的操作逻辑。
+    5. 风格要求：专业、客观、严厉，多用专业术语，严禁废话。
     """
     try:
-        model = genai.GenerativeModel('gemini-3.1-flash-lite')
+        # 注意：这里务必使用之前测试成功的模型名字，避免再次出现 404 报错
+        model = genai.GenerativeModel('gemini-3.1-flash-lite') 
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:

@@ -80,7 +80,7 @@ def generate_ai_report(market_context, time_period):
     4. 风格要求：专业、客观、严厉，多用专业术语，严禁废话。
     """
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-3.1-flash-lite ')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:

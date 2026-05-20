@@ -2,10 +2,9 @@ name: Semiconductor AI Agent
 
 on:
   schedule:
-    - cron: '45 0 * * 1-5'
-    - cron: '0 8 * * 1-5'
-  workflow_dispatch: 
-
+    - cron: '37 21 * * 0-4'  # 如果你想保留 GitHub 自己的错峰备用定时器
+  workflow_dispatch:         # 👈 这行最关键！允许外部 API (cron-job) 触发
+  
 jobs:
   run-agent:
     runs-on: ubuntu-latest
